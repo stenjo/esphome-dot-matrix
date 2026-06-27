@@ -1,5 +1,7 @@
 # esphome-dot-matrix
 
+[![CI](https://github.com/stenjo/esphome-dot-matrix/actions/workflows/ci.yml/badge.svg)](https://github.com/stenjo/esphome-dot-matrix/actions/workflows/ci.yml)
+
 An [ESPHome](https://esphome.io/) external component for MAX7219-based
 cascaded 8×8 LED dot-matrix displays, with rendering ported from the original
 [`dot-matrix-calendar`](https://github.com/stenjo/dot-matrix-calendar)
