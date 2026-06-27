@@ -94,6 +94,34 @@ int DotMatrixDisplay::print_dm(int x_start, const char *text, Color color) {
   return cx;
 }
 
+int DotMatrixDisplay::measure_dm(const char *text) {
+  int cx = 0;
+  size_t slen = std::strlen(text);
+  for (size_t i = 0; i < slen; i++) {
+    uint8_t chr = text[i];
+    if (chr == ' ') {
+      cx += 3;
+      continue;
+    }
+    if (chr == ESCAPE_CHAR) {
+      if (++i >= slen)
+        break;
+      chr = text[i];
+    }
+    if (chr < 32)
+      continue;
+    cx += FONT[FONT_INDEX[chr - 32]] + 1;  // glyph width + inter-glyph gap
+  }
+  return cx > 0 ? cx - 1 : 0;  // drop the trailing gap
+}
+
+int DotMatrixDisplay::print_dm_centered(const char *text, Color color) {
+  int start = (this->get_width() - this->measure_dm(text)) / 2;
+  if (start < 0)
+    start = 0;
+  return this->print_dm(start, text, color);
+}
+
 // --------------------------------------------------------------------------
 //  SPI transport + flush
 // --------------------------------------------------------------------------

@@ -110,6 +110,12 @@ display:
 `DisplayBuffer` methods (`print`, `printf`, `strftime`, `line`, `rectangle`,
 `draw_pixel_at`, ...) work alongside it.
 
+Centering: `it.print_dm_centered("...")` centers across the full display width
+(the same behaviour as the action component's `write(..., centered: true)`).
+For laying things out by hand, `it.measure_dm("...")` returns the pixel width a
+string would occupy without drawing it, so you can position composites yourself:
+`int x = (it.get_width() - it.measure_dm(s)) / 2; it.print_dm(x, s);`.
+
 Live brightness from a lambda: `id(panel).intensity(8);`.
 
 ### Which one to use?

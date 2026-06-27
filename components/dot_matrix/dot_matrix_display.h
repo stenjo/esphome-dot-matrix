@@ -49,6 +49,18 @@ class DotMatrixDisplay : public display::DisplayBuffer,
     return this->print_dm(x_start, text.c_str(), color);
   }
 
+  // Pixel width print_dm() would occupy (inter-glyph gaps included, trailing
+  // gap excluded). Does not draw anything.
+  int measure_dm(const char *text);
+  int measure_dm(const std::string &text) { return this->measure_dm(text.c_str()); }
+
+  // Draw text centered across the full display width (mirrors the original
+  // write(text, centered=true)). Returns the column after the last glyph.
+  int print_dm_centered(const char *text, Color color = display::COLOR_ON);
+  int print_dm_centered(const std::string &text, Color color = display::COLOR_ON) {
+    return this->print_dm_centered(text.c_str(), color);
+  }
+
  protected:
   void send_byte_(uint8_t reg, uint8_t data);
   void send_to_all_(uint8_t reg, uint8_t data);
