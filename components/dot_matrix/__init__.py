@@ -58,7 +58,7 @@ WRITE_SCHEMA = cv.Schema(
 )
 
 
-@automation.register_action("dot_matrix.write", WriteAction, WRITE_SCHEMA)
+@automation.register_action("dot_matrix.write", WriteAction, WRITE_SCHEMA, synchronous=True)
 async def write_action_to_code(config, action_id, template_arg, args):
     var = cg.new_Pvariable(action_id, template_arg)
     await cg.register_parented(var, config[CONF_ID])
@@ -78,7 +78,7 @@ MARQUEE_SCHEMA = cv.Schema(
 )
 
 
-@automation.register_action("dot_matrix.marquee", MarqueeAction, MARQUEE_SCHEMA)
+@automation.register_action("dot_matrix.marquee", MarqueeAction, MARQUEE_SCHEMA, synchronous=True)
 async def marquee_action_to_code(config, action_id, template_arg, args):
     var = cg.new_Pvariable(action_id, template_arg)
     await cg.register_parented(var, config[CONF_ID])
@@ -94,7 +94,7 @@ CLEAR_SCHEMA = automation.maybe_simple_id(
 )
 
 
-@automation.register_action("dot_matrix.clear", ClearAction, CLEAR_SCHEMA)
+@automation.register_action("dot_matrix.clear", ClearAction, CLEAR_SCHEMA, synchronous=True)
 async def clear_action_to_code(config, action_id, template_arg, args):
     var = cg.new_Pvariable(action_id, template_arg)
     await cg.register_parented(var, config[CONF_ID])
