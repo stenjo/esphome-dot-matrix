@@ -1,0 +1,46 @@
+esphome:
+  name: test-action
+
+esp32:
+  board: esp32-s2-saola-1
+  framework:
+    type: esp-idf
+
+logger:
+
+external_components:
+  - source:
+      type: local
+      path: ../components
+    components: [dot_matrix]
+
+spi:
+  clk_pin: GPIO12
+  mosi_pin: GPIO11
+
+dot_matrix:
+  id: display1
+  cs_pin: GPIO10
+  num_modules: 8
+  brightness: 3
+  scroll_delay: 30ms
+
+button:
+  - platform: template
+    name: "Write"
+    on_press:
+      - dot_matrix.write:
+          id: display1
+          text: "Blåbær ÆØÅ æøå"
+          centered: true
+  - platform: template
+    name: "Marquee"
+    on_press:
+      - dot_matrix.marquee:
+          id: display1
+          text: !lambda 'return "Rull tekst";'
+          wrap: true
+  - platform: template
+    name: "Clear"
+    on_press:
+      - dot_matrix.clear: display1

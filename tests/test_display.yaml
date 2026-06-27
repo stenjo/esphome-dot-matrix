@@ -1,0 +1,30 @@
+esphome:
+  name: test-display
+
+esp32:
+  board: esp32-s2-saola-1
+  framework:
+    type: esp-idf
+
+logger:
+
+external_components:
+  - source:
+      type: local
+      path: ../components
+    components: [dot_matrix]
+
+spi:
+  clk_pin: GPIO12
+  mosi_pin: GPIO11
+
+display:
+  - platform: dot_matrix
+    id: panel
+    cs_pin: GPIO9
+    num_modules: 8
+    intensity: 3
+    update_interval: 500ms
+    lambda: |-
+      int x = it.print_dm(0, "Kl ");
+      it.print_dm(x, "12:34");
