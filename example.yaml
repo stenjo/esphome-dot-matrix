@@ -1,0 +1,82 @@
+substitutions:
+  name: dotmatrix-clock
+
+esphome:
+  name: ${name}
+
+esp32:
+  board: esp32-s2-saola-1
+  framework:
+    type: esp-idf
+
+logger:
+api:
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+# Pull the component straight from your repo:
+external_components:
+  - source:
+      type: git
+      url: https://github.com/stenjo/esphome-dot-matrix
+      ref: main
+    components: [dot_matrix]
+
+# Shared SPI bus (no MISO needed for MAX7219)
+spi:
+  clk_pin: GPIO12
+  mosi_pin: GPIO11
+
+dot_matrix:
+  id: display1
+  cs_pin: GPIO10
+  num_modules: 8        # number of cascaded 8x8 panels
+  brightness: 3         # 0..15
+  scroll_delay: 30ms
+
+# --- Example usage --------------------------------------------------------
+
+# Static, centred text (Norwegian letters render directly from UTF-8)
+button:
+  - platform: template
+    name: "Vis dato"
+    on_press:
+      - dot_matrix.write:
+          id: display1
+          text: "Tirsdag 27. mai"
+          centered: true
+
+# Scrolling marquee, value rendered from a lambda
+  - platform: template
+    name: "Rull melding"
+    on_press:
+      - dot_matrix.marquee:
+          id: display1
+          text: !lambda 'return "Blåbær og rømmegrøt — ÆØÅ æøå";'
+          wrap: true
+
+  - platform: template
+    name: "Tøm skjerm"
+    on_press:
+      - dot_matrix.clear: display1
+
+# --------------------------------------------------------------------------
+# Alternative: display platform (it.print() dashboard style)
+# --------------------------------------------------------------------------
+# font:
+#   - file: "fonts/pixel.ttf"
+#     id: tiny
+#     size: 8
+#     glyphs: " 0123456789:.°CABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅabcdefghijklmnopqrstuvwxyzæøå"
+#
+# display:
+#   - platform: dot_matrix
+#     id: panel
+#     cs_pin: GPIO9          # different CS than the action component above
+#     num_modules: 8
+#     intensity: 3
+#     update_interval: 500ms
+#     lambda: |-
+#       it.print_dm(0, "Stue:");
+#       it.printf(34, 0, id(tiny), "%.0f", id(stue_temp).state);
