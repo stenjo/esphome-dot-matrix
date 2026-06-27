@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef USE_DISPLAY
+
 #include "esphome/core/component.h"
 #include "esphome/core/color.h"
 #include "esphome/components/display/display_buffer.h"
@@ -62,3 +64,5 @@ class DotMatrixDisplay : public display::DisplayBuffer,
 
 }  // namespace dot_matrix
 }  // namespace esphome
+
+#endif  // USE_DISPLAY

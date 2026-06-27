@@ -1,3 +1,5 @@
+#include "esphome/core/defines.h"
+#ifdef USE_DISPLAY
 #include "dot_matrix_display.h"
 #include "dot_matrix_font.h"
 #include "esphome/core/log.h"
@@ -156,3 +158,5 @@ void DotMatrixDisplay::flush_() {
 
 }  // namespace dot_matrix
 }  // namespace esphome
+
+#endif  // USE_DISPLAY
