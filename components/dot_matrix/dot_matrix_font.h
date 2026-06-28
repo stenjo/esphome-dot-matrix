@@ -16,6 +16,9 @@
 //          å 0xC3 0xA5 (165)   æ 0xC3 0xA6 (166)   ø 0xC3 0xB8 (184)
 //      The degree sign ° is placed at byte 176 and reached via the 0xC2
 //      escape (UTF-8 0xC2 0xB0), so "21.5°C" renders directly.
+//      Further 0xC2 symbols live at their continuation-byte positions:
+//      « 0xAB(171)  ± 0xB1(177)  ² 0xB2(178)  ³ 0xB3(179)  µ 0xB5(181)
+//      » 0xBB(187, FONT_INDEX extended to 156 entries).
 //      This means plain UTF-8 text ("Blåbær", "Mandag") renders correctly
 //      with no transcoding — the bytes flow straight through.
 // ---------------------------------------------------------------------------
@@ -25,7 +28,7 @@ namespace dot_matrix {
 
 static const uint8_t ESCAPE_CHAR = 195;   // 0xC3 — UTF-8 lead byte of æ/ø/å
 static const uint8_t ESCAPE_CHAR_2 = 194; // 0xC2 — UTF-8 lead byte of ° (0xB0)
-static const uint16_t FONT_GLYPH_COUNT = 154;  // entries in FONT_INDEX
+static const uint16_t FONT_GLYPH_COUNT = 156;  // entries in FONT_INDEX
 
 // First byte per glyph = width, remaining bytes = column bitmaps.
 static const uint8_t FONT[] = {
@@ -168,21 +171,23 @@ static const uint8_t FONT[] = {
     1, 0b00000000,                                              /* 168 */
     1, 0b00000000,                                              /* 169 */
     1, 0b00000000,                                              /* 170 */
-    1, 0b00000000,                                              /* 171 */
+    5, 0b00010000, 0b00101000, 0b01010100, 0b00101000, 0b01000100,  /* 171 = « */
     1, 0b00000000,                                              /* 172 */
     1, 0b00000000,                                              /* 173 */
     1, 0b00000000,                                              /* 174 */
     1, 0b00000000,                                              /* 175 */
     3, 0b00000010, 0b00000101, 0b00000010,                      /* 176 = ° */
-    1, 0b00000000,                                              /* 177 */
-    1, 0b00000000,                                              /* 178 */
-    1, 0b00000000,                                              /* 179 */
+    5, 0b10001000, 0b10001000, 0b10111110, 0b10001000, 0b10001000,  /* 177 = ± */
+    3, 0b00011101, 0b00010101, 0b00010111,  /* 178 = ² */
+    3, 0b00010101, 0b00010101, 0b00011111,  /* 179 = ³ */
     1, 0b00000000,                                              /* 180 */
-    1, 0b00000000,                                              /* 181 */
+    5, 0b11111100, 0b01000000, 0b01000000, 0b01000000, 0b01111100,  /* 181 = µ */
     1, 0b00000000,                                              /* 182 */
     1, 0b00000000,                                              /* 183 */
     5, 0b01011000, 0b00100100, 0b01010100, 0b01001000, 0b00110100, /* 184 = ø */
-    1, 0b00000000};
+    1, 0b00000000,                                              /* 185 */
+    1, 0b00000000,                                              /* 186 */
+    5, 0b01000100, 0b00101000, 0b01010100, 0b00101000, 0b00010000};  /* 187 = » */
 
 // Index of each glyph's start within FONT[], addressed by (byte_value - 32).
 static const uint16_t FONT_INDEX[] = {
@@ -195,8 +200,8 @@ static const uint16_t FONT_INDEX[] = {
     493, 499, 503, 505, 509, 515, 517, 519, 521, 523, 525, 527, 533, 540, 542,
     544, 546, 548, 550, 552, 554, 556, 558, 560, 562, 564, 566, 568, 570, 572,
     574, 580, 582, 584, 586, 588, 590, 592, 594, 596, 598, 600, 602, 604, 610,
-    617, 619, 621, 623, 625, 627, 629, 631, 633, 635, 639, 641, 643, 645, 647,
-    649, 651, 653, 659};
+    617, 619, 621, 623, 625, 631, 633, 635, 637, 639, 643, 649, 653, 657, 659,
+    665, 667, 669, 675, 677, 679};
 
 }  // namespace dot_matrix
 }  // namespace esphome
