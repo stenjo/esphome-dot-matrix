@@ -72,12 +72,12 @@ int DotMatrixDisplay::print_dm(int x_start, const char *text, Color color) {
       cx += 3;  // matches the original 2-3 column space
       continue;
     }
-    if (chr == ESCAPE_CHAR) {  // 0xC3 -> UTF-8 Æ/Ø/Å/æ/ø/å
+    if (chr == ESCAPE_CHAR || chr == ESCAPE_CHAR_2) {  // 0xC3 Æ/Ø/Å/æ/ø/å, 0xC2 °
       if (++i >= slen)
         break;
       chr = text[i];
     }
-    if (chr < 32)
+    if (chr < 32 || (uint8_t) (chr - 32) >= FONT_GLYPH_COUNT)
       continue;
 
     uint16_t idx = FONT_INDEX[chr - 32];
@@ -103,12 +103,12 @@ int DotMatrixDisplay::measure_dm(const char *text) {
       cx += 3;
       continue;
     }
-    if (chr == ESCAPE_CHAR) {
+    if (chr == ESCAPE_CHAR || chr == ESCAPE_CHAR_2) {
       if (++i >= slen)
         break;
       chr = text[i];
     }
-    if (chr < 32)
+    if (chr < 32 || (uint8_t) (chr - 32) >= FONT_GLYPH_COUNT)
       continue;
     cx += FONT[FONT_INDEX[chr - 32]] + 1;  // glyph width + inter-glyph gap
   }

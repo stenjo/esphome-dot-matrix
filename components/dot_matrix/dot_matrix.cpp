@@ -143,6 +143,8 @@ void DotMatrix::rotate_ccw_(const uint8_t *frame, uint8_t *rotated) {
 }
 
 uint8_t DotMatrix::get_char_column_(uint8_t chr, uint8_t pos) {
+  if (chr < 32 || (uint8_t) (chr - 32) >= FONT_GLYPH_COUNT)
+    return 0;
   uint8_t asc = chr - 32;
   uint16_t idx = FONT_INDEX[asc];
   uint8_t w = FONT[idx];
@@ -155,11 +157,17 @@ size_t DotMatrix::text_length_(const char *text) {
   size_t len = 0;
   size_t n = std::strlen(text);
   for (uint16_t i = 0; i < n; i++) {
-    if ((uint8_t)(text[i]) == ESCAPE_CHAR)
-      i++;
-    len += FONT[FONT_INDEX[(uint8_t)(text[i]) - 32]] + 1;
+    uint8_t chr = text[i];
+    if (chr == ESCAPE_CHAR || chr == ESCAPE_CHAR_2) {
+      if (++i >= n)
+        break;
+      chr = text[i];
+    }
+    if (chr < 32 || (uint8_t) (chr - 32) >= FONT_GLYPH_COUNT)
+      continue;
+    len += FONT[FONT_INDEX[chr - 32]] + 1;
   }
-  return len - 1;
+  return len > 0 ? len - 1 : 0;
 }
 
 void DotMatrix::copy_text_(const char *text, bool center) {
@@ -187,7 +195,7 @@ void DotMatrix::copy_text_(const char *text, bool center) {
       continue;
     }
 
-    if (chr == ESCAPE_CHAR) {
+    if (chr == ESCAPE_CHAR || chr == ESCAPE_CHAR_2) {
       str_idx++;
       if (str_idx < slen) {
         chr = text[str_idx];
@@ -238,7 +246,7 @@ bool DotMatrix::scroll_buffer_() {
       return false;
     } else {
       col = this->get_char_column_(chr, this->col_index_);
-      if (chr == ESCAPE_CHAR) {
+      if (chr == ESCAPE_CHAR || chr == ESCAPE_CHAR_2) {
         chr = text[++this->text_index_];
         col = this->get_char_column_(chr, this->col_index_);
       }

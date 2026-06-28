@@ -105,7 +105,7 @@ display:
 ```
 
 `it.print_dm(x, "...")` renders with the bundled flexible-width font (Æ Ø Å æ ø
-å straight from UTF-8) and returns the next free column, so you can chain calls:
+å, plus the degree sign ° straight from UTF-8) and returns the next free column, so you can chain calls:
 `int n = it.print_dm(0, "Kl "); it.print_dm(n, time_str);`. All the normal
 `DisplayBuffer` methods (`print`, `printf`, `strftime`, `line`, `rectangle`,
 `draw_pixel_at`, ...) work alongside it.

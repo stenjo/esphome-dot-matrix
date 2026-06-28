@@ -14,6 +14,8 @@
 //      byte of their UTF-8 encoding, and 0xC3 (195) is used as an escape:
 //          Å 0xC3 0x85 (133)   Æ 0xC3 0x86 (134)   Ø 0xC3 0x98 (152)
 //          å 0xC3 0xA5 (165)   æ 0xC3 0xA6 (166)   ø 0xC3 0xB8 (184)
+//      The degree sign ° is placed at byte 176 and reached via the 0xC2
+//      escape (UTF-8 0xC2 0xB0), so "21.5°C" renders directly.
 //      This means plain UTF-8 text ("Blåbær", "Mandag") renders correctly
 //      with no transcoding — the bytes flow straight through.
 // ---------------------------------------------------------------------------
@@ -21,7 +23,9 @@
 namespace esphome {
 namespace dot_matrix {
 
-static const uint8_t ESCAPE_CHAR = 195;  // 0xC3 — leading byte of UTF-8 æ/ø/å
+static const uint8_t ESCAPE_CHAR = 195;   // 0xC3 — UTF-8 lead byte of æ/ø/å
+static const uint8_t ESCAPE_CHAR_2 = 194; // 0xC2 — UTF-8 lead byte of ° (0xB0)
+static const uint16_t FONT_GLYPH_COUNT = 154;  // entries in FONT_INDEX
 
 // First byte per glyph = width, remaining bytes = column bitmaps.
 static const uint8_t FONT[] = {
@@ -169,7 +173,7 @@ static const uint8_t FONT[] = {
     1, 0b00000000,                                              /* 173 */
     1, 0b00000000,                                              /* 174 */
     1, 0b00000000,                                              /* 175 */
-    1, 0b00000000,                                              /* 176 */
+    3, 0b00000010, 0b00000101, 0b00000010,                      /* 176 = ° */
     1, 0b00000000,                                              /* 177 */
     1, 0b00000000,                                              /* 178 */
     1, 0b00000000,                                              /* 179 */
@@ -182,8 +186,8 @@ static const uint8_t FONT[] = {
 
 // Index of each glyph's start within FONT[], addressed by (byte_value - 32).
 static const uint16_t FONT_INDEX[] = {
-    0,   3,   6,   10,  16,  22,  28,  34,  36,  40,  44,  48,  54,  57,  63,
-    66,  72,  78,  82,  88,  94,  100, 106, 112, 118, 124, 130, 133, 136, 141,
+    0, 3, 6, 10, 16, 22, 28, 34, 36, 40, 44, 48, 54, 57, 63,
+    66, 72, 78, 82, 88, 94, 100, 106, 112, 118, 124, 130, 133, 136, 141,
     147, 152, 158, 164, 170, 176, 182, 188, 194, 200, 206, 212, 218, 224, 230,
     236, 242, 248, 254, 260, 266, 272, 278, 284, 290, 296, 302, 308, 314, 320,
     324, 330, 334, 340, 346, 348, 354, 360, 366, 372, 378, 384, 390, 396, 400,
@@ -191,8 +195,8 @@ static const uint16_t FONT_INDEX[] = {
     493, 499, 503, 505, 509, 515, 517, 519, 521, 523, 525, 527, 533, 540, 542,
     544, 546, 548, 550, 552, 554, 556, 558, 560, 562, 564, 566, 568, 570, 572,
     574, 580, 582, 584, 586, 588, 590, 592, 594, 596, 598, 600, 602, 604, 610,
-    617, 619, 621, 623, 625, 627, 629, 631, 633, 635, 637, 639, 641, 643, 645,
-    647, 649, 651, 657};
+    617, 619, 621, 623, 625, 627, 629, 631, 633, 635, 639, 641, 643, 645, 647,
+    649, 651, 653, 659};
 
 }  // namespace dot_matrix
 }  // namespace esphome
