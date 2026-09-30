@@ -96,6 +96,7 @@ display:
     cs_pin: GPIO10
     num_modules: 8
     intensity: 3
+    mirror_x: false    # true = horizontally mirrored (e.g. read via a mirror)
     update_interval: 500ms
     lambda: |-
       // standard ESPHome font:
@@ -118,6 +119,15 @@ string would occupy without drawing it, so you can position composites yourself:
 
 Live brightness from a lambda: `id(panel).intensity(8);`.
 
+Mirroring: `mirror_x: true` flips the whole display horizontally, so text reads
+correctly in a mirror (for example a parking-distance display seen in a car's
+rear-view mirror). It is applied when the buffer is flushed to the MAX7219s, so
+it affects every drawing method (`print_dm`, `print`, `line`, ...) and you keep
+drawing with normal, unmirrored coordinates. It can also be toggled at runtime:
+`id(panel).set_mirror_x(true);`. Note that the mirror spans the full chain
+width, so on a multi-row layout driven as one long chain the row segments swap
+places.
+
 ### Which one to use?
 
 | | `dot_matrix:` component + actions | `display: - platform: dot_matrix` |
@@ -133,7 +143,8 @@ Both can run at once on different CS pins.
 
 - SPI clock is fixed at 1 MHz (`DATA_RATE_1MHZ`). MAX7219 supports up to
   10 MHz; expose as an option if you want faster refresh on long chains.
-- `mirrored` and per-segment invert flags from the original driver are present
+- The display platform supports `mirror_x`. On the action component, the
+  `mirrored` and per-segment invert flags from the original driver are present
   in the class but not yet surfaced in the config schema.
 - A `display`-platform variant (lambda/`it.print()` style) is possible later;
   this build keeps the original marquee/write API as actions.

@@ -177,7 +177,16 @@ void DotMatrixDisplay::flush_() {
   uint8_t rows[8];
   for (uint8_t d = 0; d < this->num_modules_; d++) {
     std::memset(rows, 0, 8);
-    this->rotate_ccw_(&this->buffer_[d * 8], rows);
+    if (this->mirror_x_) {
+      // Reverse column order across the full width; column bytes are unchanged.
+      const int w = this->num_modules_ * 8;
+      uint8_t frame[8];
+      for (int i = 0; i < 8; i++)
+        frame[i] = this->buffer_[w - 1 - (d * 8 + i)];
+      this->rotate_ccw_(frame, rows);
+    } else {
+      this->rotate_ccw_(&this->buffer_[d * 8], rows);
+    }
     // Write the 8 digit registers of chip d (one row each).
     for (uint8_t r = 0; r < 8; r++)
       this->send_(d, REG_DIGIT_0 + r, rows[r]);

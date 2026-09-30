@@ -7,6 +7,7 @@ CODEOWNERS = ["@stenjo"]
 DEPENDENCIES = ["spi"]
 
 CONF_NUM_MODULES = "num_modules"
+CONF_MIRROR_X = "mirror_x"
 
 dot_matrix_ns = cg.esphome_ns.namespace("dot_matrix")
 DotMatrixDisplay = dot_matrix_ns.class_(
@@ -20,6 +21,7 @@ CONFIG_SCHEMA = (
             cv.GenerateID(): cv.declare_id(DotMatrixDisplay),
             cv.Optional(CONF_NUM_MODULES, default=8): cv.int_range(min=1, max=16),
             cv.Optional(CONF_INTENSITY, default=3): cv.int_range(min=0, max=15),
+            cv.Optional(CONF_MIRROR_X, default=False): cv.boolean,
         }
     )
     .extend(cv.polling_component_schema("500ms"))
@@ -34,6 +36,7 @@ async def to_code(config):
 
     cg.add(var.set_num_modules(config[CONF_NUM_MODULES]))
     cg.add(var.set_intensity(config[CONF_INTENSITY]))
+    cg.add(var.set_mirror_x(config[CONF_MIRROR_X]))
 
     if CONF_LAMBDA in config:
         lambda_ = await cg.process_lambda(

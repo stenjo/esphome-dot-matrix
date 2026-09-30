@@ -24,6 +24,7 @@ display:
     cs_pin: GPIO9
     num_modules: 8
     intensity: 3
+    mirror_x: true
     update_interval: 500ms
     lambda: |-
       int x = it.print_dm(0, "Kl ");
