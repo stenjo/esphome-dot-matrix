@@ -13,7 +13,7 @@ jobs:
     name: native tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Run native rendering tests with coverage
         env:
@@ -31,7 +31,7 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: native-test-coverage
           path: ${{ runner.temp }}/dot-matrix-coverage/*.gcov
@@ -48,9 +48,9 @@ jobs:
           - test_display
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -59,7 +59,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Cache PlatformIO packages
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.platformio
           key: pio-esp32s2-idf-${{ hashFiles(format('tests/{0}.yaml', matrix.test)) }}
