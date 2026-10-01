@@ -27,6 +27,10 @@ class DotMatrixDisplay : public display::DisplayBuffer,
   void set_writer(std::function<void(DotMatrixDisplay &)> &&writer) { this->writer_ = std::move(writer); }
   void set_num_modules(uint8_t n) { this->num_modules_ = n; }
   void set_intensity(uint8_t i) { this->intensity_ = i; }
+  // Mirror the whole display horizontally (e.g. for reading in a rear-view mirror).
+  // Applied at flush time, so it affects every drawing method.
+  void set_mirror_x(bool mirror) { this->mirror_x_ = mirror; }
+  bool get_mirror_x() const { return this->mirror_x_; }
 
   void setup() override;
   void update() override;
@@ -71,6 +75,7 @@ class DotMatrixDisplay : public display::DisplayBuffer,
 
   uint8_t num_modules_{8};
   uint8_t intensity_{3};
+  bool mirror_x_{false};
   std::vector<uint8_t> buffer_;  // column-major: buffer_[x], bit y = pixel(x,y)
   std::function<void(DotMatrixDisplay &)> writer_{};
 };
