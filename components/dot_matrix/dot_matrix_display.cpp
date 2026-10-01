@@ -2,6 +2,7 @@
 #ifdef USE_DISPLAY
 #include "dot_matrix_display.h"
 #include "dot_matrix_font.h"
+#include "dot_matrix_render.h"
 #include "esphome/core/log.h"
 #include <algorithm>
 #include <cstring>
@@ -95,24 +96,7 @@ int DotMatrixDisplay::print_dm(int x_start, const char *text, Color color) {
 }
 
 int DotMatrixDisplay::measure_dm(const char *text) {
-  int cx = 0;
-  size_t slen = std::strlen(text);
-  for (size_t i = 0; i < slen; i++) {
-    uint8_t chr = text[i];
-    if (chr == ' ') {
-      cx += 3;
-      continue;
-    }
-    if (chr == ESCAPE_CHAR || chr == ESCAPE_CHAR_2) {
-      if (++i >= slen)
-        break;
-      chr = text[i];
-    }
-    if (chr < 32 || (uint8_t) (chr - 32) >= FONT_GLYPH_COUNT)
-      continue;
-    cx += FONT[FONT_INDEX[chr - 32]] + 1;  // glyph width + inter-glyph gap
-  }
-  return cx > 0 ? cx - 1 : 0;  // drop the trailing gap
+  return render::measure_text(text);
 }
 
 int DotMatrixDisplay::print_dm_centered(const char *text, Color color) {
@@ -167,10 +151,7 @@ void DotMatrixDisplay::intensity(uint8_t value) {
 }
 
 void DotMatrixDisplay::rotate_ccw_(const uint8_t *frame, uint8_t *rotated) {
-  for (int i = 0; i < 8; ++i)
-    for (int j = 0; j < 8; ++j)
-      if (frame[i] & (1 << j))
-        rotated[j] |= (1 << (7 - i));
+  render::rotate_ccw(frame, rotated);
 }
 
 void DotMatrixDisplay::flush_() {

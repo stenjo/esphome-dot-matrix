@@ -1,5 +1,6 @@
 #include "dot_matrix.h"
 #include "dot_matrix_font.h"
+#include "dot_matrix_render.h"
 #include "esphome/core/log.h"
 #include <cstring>
 
@@ -136,10 +137,7 @@ void DotMatrix::display_clear_() {
 // --------------------------------------------------------------------------
 
 void DotMatrix::rotate_ccw_(const uint8_t *frame, uint8_t *rotated) {
-  for (int i = 0; i < 8; ++i)
-    for (int j = 0; j < 8; ++j)
-      if (frame[i] & (1 << j))
-        rotated[j] |= (1 << (7 - i));
+  render::rotate_ccw(frame, rotated);
 }
 
 uint8_t DotMatrix::get_char_column_(uint8_t chr, uint8_t pos) {
@@ -154,20 +152,7 @@ uint8_t DotMatrix::get_char_column_(uint8_t chr, uint8_t pos) {
 }
 
 size_t DotMatrix::text_length_(const char *text) {
-  size_t len = 0;
-  size_t n = std::strlen(text);
-  for (uint16_t i = 0; i < n; i++) {
-    uint8_t chr = text[i];
-    if (chr == ESCAPE_CHAR || chr == ESCAPE_CHAR_2) {
-      if (++i >= n)
-        break;
-      chr = text[i];
-    }
-    if (chr < 32 || (uint8_t) (chr - 32) >= FONT_GLYPH_COUNT)
-      continue;
-    len += FONT[FONT_INDEX[chr - 32]] + 1;
-  }
-  return len > 0 ? len - 1 : 0;
+  return render::measure_text(text);
 }
 
 void DotMatrix::copy_text_(const char *text, bool center) {

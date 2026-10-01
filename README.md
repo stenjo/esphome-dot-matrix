@@ -149,6 +149,28 @@ Both can run at once on different CS pins.
 - A `display`-platform variant (lambda/`it.print()` style) is possible later;
   this build keeps the original marquee/write API as actions.
 
+## Testing
+
+Install ESPHome and run the native rendering regression tests:
+
+```sh
+python -m pip install -r requirements.txt
+g++ -std=c++17 -Wall -Wextra -Werror -I components/dot_matrix tests/test_render.cpp -o /tmp/test_render
+/tmp/test_render
+```
+
+Validate the sample configurations or build their firmware images with:
+
+```sh
+python -m esphome config tests/test_action.yaml
+python -m esphome config tests/test_display.yaml
+python -m esphome compile tests/test_action.yaml
+python -m esphome compile tests/test_display.yaml
+```
+
+Firmware builds may download the ESP-IDF toolchain on the first run. CI runs
+the native regression tests and compiles both configurations.
+
 ## Layout
 
 ```
