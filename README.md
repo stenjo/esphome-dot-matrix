@@ -146,8 +146,6 @@ Both can run at once on different CS pins.
 - The display platform supports `mirror_x`. On the action component, the
   `mirrored` and per-segment invert flags from the original driver are present
   in the class but not yet surfaced in the config schema.
-- A `display`-platform variant (lambda/`it.print()` style) is possible later;
-  this build keeps the original marquee/write API as actions.
 
 ## Testing
 
